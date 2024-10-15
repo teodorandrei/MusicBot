@@ -36,3 +36,4 @@ Before running the bot, you need to set your Discord bot token. Replace the plac
 2. Use the following commands in your Discord server:
    - ```play <YT URL/Song Name>```
    - ```stop```
+   - ```skip```
