@@ -6,9 +6,13 @@ import logging
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 import asyncio
+
+from django.utils.log import RequireDebugTrue
+
 from config import *
 
 song_queue = []
+vote_skip_users = set()
 
 class TkinterHandler(logging.Handler):
     def __init__(self, text_widget):
@@ -131,8 +135,31 @@ async def play(ctx, *, url):
             await ctx.send(f"Music already playing. Added next in queue: ``{url}``")
 
 
+@bot.command(name='skip', help='Skips the currently playing song if you\'re an admin, or starts a voteskip if you\'re not an admin.')
+async def skip(ctx):
+    voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
+    if ctx.author.guild_permissions.administrator:
+        if voice_client and voice_client.is_playing():
+            voice_client.stop()
+            await ctx.send(f"Skipped the current song.")
+            await play_next(ctx)
+        else:
+            await ctx.send("No song is currently playing.")
+    else:
+        if ctx.author.id not in vote_skip_users:
+            vote_skip_users.add(ctx.author.id)
+            remaining_votes = REQUIRED_SKIP_VOTES - len(vote_skip_users)
+            await ctx.send(f"{ctx.author.name} voted to skip the song! {remaining_votes} more votes needed.")
 
+            if len(vote_skip_users) >= REQUIRED_SKIP_VOTES:
+                vote_skip_users.clear()
+                if voice_client and voice_client.is_playing():
+                    voice_client.stop()
+                    await ctx.send("Vote passed! Skipped the current song.")
+                    await play_next(ctx)
+        else:
+            await ctx.send("You have already voted to skip this song!")
 
 @bot.command(name='stop', help='Stops the currently playing song and disconnects the bot from the voice channel.')
 async def stop(ctx):
