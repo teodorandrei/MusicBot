@@ -20,10 +20,10 @@ A simple music bot for Discord that allows users to play songs from YouTube dire
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name```
+   cd your-repo-name
 2. Set up a virtual environment (optional but recommended):
    ```python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate` ```
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate` 
 3. Install the required packages:
    ```pip install -r requirements.txt```
 
